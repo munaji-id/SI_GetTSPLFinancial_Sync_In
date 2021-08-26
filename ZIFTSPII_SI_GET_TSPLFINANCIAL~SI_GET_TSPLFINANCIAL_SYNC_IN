@@ -1,0 +1,46 @@
+  METHOD ziftspii_si_get_tsplfinancial~si_get_tsplfinancial_sync_in.
+
+    TYPES: BEGIN OF ty_data,
+             no_kpe          TYPE zttdes_bumnpea-no_kpe,
+             kd_klaim        TYPE zttdes_bumnpea-kd_klaim,
+             nama            TYPE zttdes_bumnpea-nama,
+             kd_cabang       TYPE zttdes_bumnpea-kd_cabang,
+             tgl_posting     TYPE zttdes_bumnpea-tgl_ren_bayar,
+             bank_account_no TYPE zttdes_bumnpea-bank_account_no,
+             bank_name       TYPE zttdes_bumnpea-bank_name.
+    TYPES: END OF ty_data.
+
+    DATA: ls_lineout         TYPE ZIFTSPDT_GET_TSPLFINANCIAL_RE1.
+
+
+    DATA: BEGIN OF r_tglpost,
+            sign   TYPE char1,
+            option TYPE char2,
+            low    TYPE char30,
+            high   TYPE char30,
+          END OF r_tglpost.
+
+    DATA: it_data    TYPE STANDARD TABLE OF ty_data,
+          wa_data    TYPE ty_data,
+          "r_tglpost    TYPE STANDARD TABLE OF ty_input,
+          wa_tglpost LIKE r_tglpost.
+
+    "RANGES: r_tglpost for zttdes_bumnpea-tgl_ren_bayar.
+    r_tglpost-sign = 'I'.
+    r_tglpost-option = 'BT'.
+    r_tglpost-low = input-mt_get_tsplfinancial-tahun && input-mt_get_tsplfinancial-bulan && '01'.
+
+    CALL FUNCTION 'BKK_GET_MONTH_LASTDAY'
+      EXPORTING
+        i_date = r_tglpost-low
+      IMPORTING
+        e_date = r_tglpost-high.
+    "APPEND r_tglpost.
+    SELECT * INTO CORRESPONDING FIELDS OF TABLE it_data FROM zttdes_bumnpea
+      WHERE tgl_ren_bayar BETWEEN r_tglpost-low AND r_tglpost-high.
+
+    IF it_data[] IS NOT INITIAL.
+      APPEND LINES OF ls_lineout[] to output-mt_get_tsplfinancial_resp-data_financial[].
+    ENDIF.
+
+  ENDMETHOD.
