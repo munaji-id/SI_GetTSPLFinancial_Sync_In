@@ -7,7 +7,8 @@
              kd_cabang       TYPE zttdes_bumnpea-kd_cabang,
              tgl_posting     TYPE zttdes_bumnpea-tgl_ren_bayar,
              bank_account_no TYPE zttdes_bumnpea-bank_account_no,
-             bank_name       TYPE zttdes_bumnpea-bank_name.
+             bank_name       TYPE zttdes_bumnpea-bank_name,
+             nilai           TYPE zttdes_bumnpea-nilai.
     TYPES: END OF ty_data.
 
     DATA: ls_lineout         TYPE ZIFTSPDT_GET_TSPLFINANCIAL_RE1.
@@ -51,6 +52,7 @@
       ls_lineout-tgl_posting = wa_data-tgl_posting.
       ls_lineout-bank_account_no = wa_data-bank_account_no.
       ls_lineout-bank_name = wa_data-bank_name.
+      ls_lineout-value = wa_data-nilai.
       APPEND ls_lineout TO output-mt_get_tsplfinancial_resp-data_financial.
     ENDLOOP.
 
