@@ -1,4 +1,4 @@
-  METHOD ziftspii_si_get_tsplfinancial~si_get_tsplfinancial_sync_in.
+   METHOD ziftspii_si_get_tsplfinancial~si_get_tsplfinancial_sync_in.
 
     TYPES: BEGIN OF ty_data,
              no_kpe          TYPE zttdes_bumnpea-no_kpe,
@@ -16,8 +16,8 @@
     DATA: BEGIN OF r_tglpost,
             sign   TYPE char1,
             option TYPE char2,
-            low    TYPE char30,
-            high   TYPE char30,
+            low    TYPE sy-datum,
+            high   TYPE sy-datum,
           END OF r_tglpost.
 
     DATA: it_data    TYPE STANDARD TABLE OF ty_data,
@@ -39,8 +39,19 @@
     SELECT * INTO CORRESPONDING FIELDS OF TABLE it_data FROM zttdes_bumnpea
       WHERE tgl_ren_bayar BETWEEN r_tglpost-low AND r_tglpost-high.
 
-    IF it_data[] IS NOT INITIAL.
-      APPEND LINES OF ls_lineout[] to output-mt_get_tsplfinancial_resp-data_financial[].
-    ENDIF.
+*    IF it_data IS NOT INITIAL.
+*     APPEND ls_lineout TO output-mt_get_tsplfinancial_resp-data_financial.
+*    ENDIF.
+
+    LOOP AT it_data INTO wa_data.
+      ls_lineout-no_kpe = wa_data-no_kpe.
+      ls_lineout-kd_klaim = wa_data-kd_klaim.
+      ls_lineout-nama = wa_data-nama.
+      ls_lineout-kd_cabang = wa_data-kd_cabang.
+      ls_lineout-tgl_posting = wa_data-tgl_posting.
+      ls_lineout-bank_account_no = wa_data-bank_account_no.
+      ls_lineout-bank_name = wa_data-bank_name.
+      APPEND ls_lineout TO output-mt_get_tsplfinancial_resp-data_financial.
+    ENDLOOP.
 
   ENDMETHOD.
